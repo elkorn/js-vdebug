@@ -36,14 +36,17 @@ const addVariable = inCurrentScope(({
     scope.variables.push(node.id.name);
 });
 
+
 const addNewFunctionScope = _.compose(
     addFunctionParams,
     addNewScope);
 
 class Reference {
-    constructor({identifier, declaringScope, referringScope}) {
-        if(!declaringScope) {
-            console.log(`Undeclared variable ${identifier} in scope ${referringScope.id} (${referringScope.type} ${referringScope.name})`);
+    constructor({
+        identifier, declaringScope, referringScope
+    }) {
+        if (!declaringScope) {
+            console.log(`Undeclared variable ${identifier} in scope ${referringScope.id} (${referringScope.type}${referringScope.name ? ' ' + referringScope.name : ''})`);
         } else {
             console.log(`${identifier}, ${referringScope.id} -> ${declaringScope.id}`);
         }
@@ -52,34 +55,52 @@ class Reference {
 
 const REFERENCES = [];
 
-const findReference = ({scopeChain, scope, node}) => {
-    if(node.type === 'Identifier') {
-        if(scope.declares(node.name) || isRestricted(node.name)) {
-            return;
-        } else {
-            REFERENCES.push(new Reference({
-                identifier: node.name,
-                declaringScope: scopeChain.findDeclaringScope(node.name),
-                referringScope: scope
-            }));
+const findReferences = ({
+    scopeChain, scope, nodes
+}) => {
+    for (let node of nodes) {
+        // TODO MemberExpression
+        if (node.type === 'Identifier') {
+            if (scope.declares(node.name) || isRestricted(node.name)) {
+                return;
+            } else {
+                REFERENCES.push(new Reference({
+                    identifier: node.name,
+                    declaringScope: scopeChain.findDeclaringScope(node.name),
+                    referringScope: scope
+                }));
+            }
         }
     }
 };
 
-const findReferencesInBinaryExpression = inCurrentScope(({scopeChain, scope, node}) => {
-    findReference({scopeChain, scope, node: node.left});
-    findReference({scopeChain, scope, node: node.right});
-});
+const findReferencesInNodeChildren = (...properties) =>
+          inCurrentScope(({
+              scopeChain, scope, node
+          }) => {
+              const children = properties.reduce((result, prop) => {
+                  let child = node[prop];
+                  if(_.isArray(child)) {
+                      return result.concat(child);
+                  }
 
-const findReferencesInUnaryExpression = inCurrentScope(({scopeChain, scope, node}) => {
-    findReference({scopeChain, scope, node: node.argument});
-});
+                  result.push(child);
+                  return result;
+              }, []);
+
+              findReferences({
+                  scopeChain, scope, nodes: children
+              });
+          });
 
 traverse({
     [esprima.Syntax.Program]: addNewScope,
-    [esprima.Syntax.FunctionDeclaration]: addNewFunctionScope,
+    [esprima.Syntax.FunctionDeclaration]: _.compose(addNewFunctionScope,
+                                                    addVariable),
     [esprima.Syntax.FunctionExpression]: addNewFunctionScope,
     [esprima.Syntax.VariableDeclarator]: addVariable,
-    [esprima.Syntax.BinaryExpression]: findReferencesInBinaryExpression,
-    [esprima.Syntax.UnaryExpression]: findReferencesInUnaryExpression
+    [esprima.Syntax.BinaryExpression]: findReferencesInNodeChildren('left', 'right'),
+    [esprima.Syntax.UnaryExpression]: findReferencesInNodeChildren('argument'),
+    [esprima.Syntax.AssignmentExpression]: findReferencesInNodeChildren('right'),
+    [esprima.Syntax.CallExpression]: findReferencesInNodeChildren('arguments')
 });
