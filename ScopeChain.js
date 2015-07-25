@@ -1,28 +1,29 @@
+import _ from 'lodash';
+
 const scopes = new WeakMap();
 
-export default class ScopeChain {
+const callMethod = (method, ...args) => obj => obj[method].apply(obj, args);
+
+export
+default class ScopeChain {
     constructor() {
-        scopes.set(this, {
-            chain: [],
-            current: -1
-        });
+        scopes.set(this, []);
     }
 
     pop() {
-        let state = scopes.get(this);
-        state.current--;
-        return state.chain.pop();
+        return scopes.get(this).shift();
     }
 
     push(scope) {
-        let state = scopes.get(this);
-        state.current++;
-        return state.chain.push(scope);
+        return scopes.get(this).unshift(scope);
+    }
+
+    findDeclaringScope(identifier) {
+        return scopes.get(this).find(callMethod('declares', identifier));
     }
 
     current() {
-        let state = scopes.get(this);
-        return state.chain[state.current];
+        return scopes.get(this)[0];
     }
 
     toString() {

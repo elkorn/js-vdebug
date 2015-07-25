@@ -1,4 +1,6 @@
-let ids = new WeakMap();
+import _ from 'lodash';
+
+const ids = new WeakMap();
 let ID = 0;
 
 export default class Scope {
@@ -11,4 +13,8 @@ export default class Scope {
     get id() {
         return ids.get(this);
     }
-}
+
+    declares(identifier) {
+        return _.includes(this.variables.concat(this.params), identifier);
+    }
+};

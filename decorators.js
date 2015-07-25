@@ -13,6 +13,7 @@ export const inCurrentScope = fn => ({
     scopeChain, node
 }) => {
     fn({
+        scopeChain,
         scope: scopeChain.current(),
         node
     });
