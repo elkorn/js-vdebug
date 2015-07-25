@@ -95,6 +95,7 @@ const findReferencesInProperty = nodeHandler(({
     scopeChain, node
 }) => {
     if (node.computed === true) {
+        throw new Error('computed');
         return findReferencesInNodeChildren('key', 'value')({
             scopeChain, node
         });
