@@ -1,9 +1,8 @@
 import esprima from 'esprima';
 import _ from 'lodash';
-const noop = () => {};
 
 const DEFAULT_HANDLERS = _.values(esprima.Syntax).reduce((result, value) => {
-    result[value] = noop;
+    result[value] = _.noop;
     return result;
 }, {});
 
