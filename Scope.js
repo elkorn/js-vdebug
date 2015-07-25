@@ -7,6 +7,7 @@ export default class Scope {
     constructor() {
         this.params = [];
         this.variables = [];
+        this.references = [];
         ids.set(this, ID++);
     }
 

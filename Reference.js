@@ -2,10 +2,13 @@ export default class Reference {
   constructor({
     identifier, declaringScope, referringScope
   }) {
-    if (!declaringScope) {
-      console.log(`Undeclared variable ${identifier} in scope ${referringScope.id} (${referringScope.type}${referringScope.name ? ' ' + referringScope.name : ''})`);
-    } else {
-      console.log(`${identifier}, ${referringScope.id} -> ${declaringScope.id}`);
-    }
+
+    this.identifier = identifier;
+    this.referringScopeId = referringScope.id;
+    this.declaringScopeId = declaringScope ? declaringScope.id : null;
+  }
+
+  isProblematic() {
+    return !!this.declaringScopeId;
   }
 };

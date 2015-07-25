@@ -41,15 +41,14 @@ const addNewFunctionScope = _.compose(
     addFunctionParams,
     addNewScope);
 
-const REFERENCES = [];
-
 const addIdentifierReference = inCurrentScope(({
     scopeChain, scope, node
 }) => {
     if (scope.declares(node.name) || isRestricted(node.name)) {
         return;
     } else {
-        REFERENCES.push(new Reference({
+      // TODO pass the references in arguments, decouple them from the scope?
+      scope.references.push(new Reference({
             identifier: node.name,
             declaringScope: scopeChain.findDeclaringScope(node.name),
             referringScope: scope

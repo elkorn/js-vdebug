@@ -17,7 +17,7 @@ function(customHandlerGroups, done) {
 
     withAST(function(ast) {
         let scopeChain = new ScopeChain();
-        let scopes = [];
+        let result = [];
 
         estraverse.traverse(ast, {
             enter: _.compose.apply(
@@ -28,14 +28,14 @@ function(customHandlerGroups, done) {
                 case esprima.Syntax.FunctionDeclaration:
                 case esprima.Syntax.FunctionExpression:
                 case esprima.Syntax.Program:
-                    scopes.unshift(scopeChain.pop());
+                    result.unshift(scopeChain.pop());
                 }
             }
         });
 
         if (done) {
             done({
-                ast, scopes
+                ast, result
             });
         }
     });
