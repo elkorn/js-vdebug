@@ -16,6 +16,6 @@ export default class Scope {
     }
 
     declares(identifier) {
-        return _.includes(this.variables.concat(this.params), identifier);
+      return this.name === identifier || _.includes(this.variables.concat(this.params), identifier);
     }
 };

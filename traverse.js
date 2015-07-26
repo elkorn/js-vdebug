@@ -3,7 +3,7 @@ import estraverse from 'estraverse';
 import _ from 'lodash';
 
 import {
-    withAST
+  withAST
 }
 from './withInput';
 
@@ -12,31 +12,34 @@ import ScopeChain from './ScopeChain';
 
 export
 default
-function(customHandlerGroups, done) {
-    const handlerGroups = customHandlerGroups.map(customHandlers => new NodeHandlers(customHandlers));
 
-    withAST(function(ast) {
-        let scopeChain = new ScopeChain();
-        let result = [];
+function({
+  customHandlerGroups, done, input
+}) {
+  const handlerGroups = customHandlerGroups.map(customHandlers => new NodeHandlers(customHandlers));
 
-        estraverse.traverse(ast, {
-            enter: _.compose.apply(
-                _,
-                handlerGroups.map(handlers => handlers.handle.bind(handlers, scopeChain))),
-            leave: node => {
-                switch (node.type) {
-                case esprima.Syntax.FunctionDeclaration:
-                case esprima.Syntax.FunctionExpression:
-                case esprima.Syntax.Program:
-                    result.unshift(scopeChain.pop());
-                }
-            }
-        });
+  withAST(input, function(ast) {
+    let scopeChain = new ScopeChain();
+    let result = [];
 
-        if (done) {
-            done({
-                ast, result
-            });
+    estraverse.traverse(ast, {
+      enter: _.compose.apply(
+        _,
+        handlerGroups.map(handlers => handlers.handle.bind(handlers, scopeChain))),
+      leave: node => {
+        switch (node.type) {
+        case esprima.Syntax.FunctionDeclaration:
+        case esprima.Syntax.FunctionExpression:
+        case esprima.Syntax.Program:
+          result.unshift(scopeChain.pop());
         }
+      }
     });
+
+    if (done) {
+      done({
+        ast, result
+      });
+    }
+  });
 }

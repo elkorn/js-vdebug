@@ -28,3 +28,4 @@ node_modules
 .tern-port
 syntax.json
 input.*js
+ast.json
