@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import Scope from './Scope';
 import Reference from './Reference';
+import Stack from './Stack';
 
 import {
   nodeHandler, inCurrentScope
@@ -16,9 +17,14 @@ from './genericHandlers';
 import isRestricted from './isRestricted';
 
 let currentMemberExpression = null;
+// FIXME probably a single var is enough.
+let currentPropertyStack = new Stack();
 
 const shouldSkip = node => _.some([
-  currentMemberExpression && node.name === currentMemberExpression.property.name,
+  currentMemberExpression && node === currentMemberExpression.property, (() => {
+    const currentProperty = currentPropertyStack.peek();
+    return currentProperty && node.name === currentProperty.key.name;
+  })()
 ]);
 
 const addIdentifierReference = inCurrentScope(({
@@ -57,12 +63,6 @@ const findReferences = ({
 const findReferencesInNodeChildren = (...properties) => inCurrentScope(({
   scopeChain, scope, node
 }) => {
-  if (node.type === esprima.Syntax.MemberExpression) {
-    currentMemberExpression = node;
-  } else {
-    currentMemberExpression = null;
-  }
-
   const children = properties.reduce((result, prop) => {
     let child = node[prop];
     if (_.isArray(child)) {
@@ -90,6 +90,25 @@ const findReferencesInProperty = nodeHandler(({
   });
 });
 
+const pushProperty = nodeHandler(({
+  node
+}) => {
+  if (node.computed === false) {
+    currentPropertyStack.push(node);
+  }
+});
+const popProperty = nodeHandler(({
+  node
+}) => {
+  if (node.computed === false) {
+    currentPropertyStack.pop();
+  }
+});
+
+const setCurrentMember = nodeHandler(({
+  node
+}) => currentMemberExpression = node);
+const clearCurrentMember = nodeHandler(() => currentMemberExpression = null);
 // const findReferencesInCallExpresion = nodeHandler(({
 //   scopeChain, node
 // }) => {
@@ -113,9 +132,10 @@ const handlers = {
   [esprima.Syntax.FunctionExpression]: addNewFunctionScope,
   [esprima.Syntax.VariableDeclarator]: addVariable,
   [esprima.Syntax.Identifier]: addIdentifierReference,
-  [esprima.Syntax.Literal]: _.noop,
-  [esprima.Syntax.ThisExpression]: _.noop,
-  [esprima.Syntax.MemberExpression]: ({node}) => currentMemberExpression = node,
+  [esprima.Syntax.Literal]: nodeHandler(_.noop),
+  [esprima.Syntax.ThisExpression]: nodeHandler(_.noop),
+  [esprima.Syntax.MemberExpression]: setCurrentMember,
+  [esprima.Syntax.Property]: pushProperty,
   // [esprima.Syntax.BinaryExpression]: findReferencesInNodeChildren('left', 'right'),
   // [esprima.Syntax.UnaryExpression]: findReferencesInNodeChildren('argument'),
   // [esprima.Syntax.AssignmentExpression]: findReferencesInNodeChildren('right'),
@@ -128,5 +148,13 @@ const handlers = {
   // [esprima.Syntax.NewExpression]: findReferencesInNodeChildren('object', 'arguments')
 };
 
+const leaveHandlers = {
+  [esprima.Syntax.MemberExpression]: clearCurrentMember,
+  [esprima.Syntax.Property]: popProperty,
+};
+
 export
-default handlers;
+default {
+  enter: handlers,
+  leave: leaveHandlers
+};

@@ -29,3 +29,4 @@ node_modules
 syntax.json
 input.*js
 ast.json
+esprima.json

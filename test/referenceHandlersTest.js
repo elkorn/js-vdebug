@@ -36,4 +36,25 @@ describe('getting references', () => {
             //   declaringScopeId: 1
             // }]);
           }));
+  it('does not recognize non-computed object property identifiers as references',
+     test(`let x = { a: 1, b: 2, c: 3 };`,
+          function({
+            result, done
+          }) {
+            result[0].references.should.eql([]);
+            done();
+          }));
+
+  it('recognizes computed object property identifiers as references',
+     test(`let x = { [a]: 1};`,
+          function({
+            result, done
+          }) {
+            result[0].references.should.eql([{
+              identifier: 'a',
+              declaringScopeId: null,
+              referringScopeId: 0
+            }]);
+            done();
+          }));
 });
