@@ -80,7 +80,23 @@ const findReferencesInProperty = nodeHandler(({
   });
 });
 
+// const findReferencesInCallExpresion = nodeHandler(({
+//   scopeChain, node
+// }) => {
+//   if (node.callee.type === "MemberExpression") {
+
+//     return findReferencesInNodeChildren('key', 'value')({
+//       scopeChain, node
+//     });
+//   }
+
+//   return findReferencesInNodeChildren('value')({
+//     scopeChain, node
+//   });
+// });
+
 const handlers = {
+  // TODO: move to genericHandlers
   [esprima.Syntax.Program]: addNewScope,
   [esprima.Syntax.FunctionDeclaration]: _.compose(addNewFunctionScope,
                                                   addVariable),
@@ -89,16 +105,17 @@ const handlers = {
   [esprima.Syntax.Identifier]: addIdentifierReference,
   [esprima.Syntax.Literal]: _.noop,
   [esprima.Syntax.ThisExpression]: _.noop,
-  [esprima.Syntax.BinaryExpression]: findReferencesInNodeChildren('left', 'right'),
-  [esprima.Syntax.UnaryExpression]: findReferencesInNodeChildren('argument'),
-  [esprima.Syntax.AssignmentExpression]: findReferencesInNodeChildren('right'),
-  [esprima.Syntax.CallExpression]: findReferencesInNodeChildren('callee', 'arguments'),
-  [esprima.Syntax.MemberExpression]: findReferencesInNodeChildren('object'),
-  [esprima.Syntax.LogicalExpression]: findReferencesInNodeChildren('left', 'right'),
-  [esprima.Syntax.Property]: findReferencesInProperty,
-  [esprima.Syntax.ObjectExpression]: findReferencesInNodeChildren('properties'),
-  [esprima.Syntax.ArrayExpression]: findReferencesInNodeChildren('elements'),
-  [esprima.Syntax.NewExpression]: findReferencesInNodeChildren('object', 'arguments')
+  [esprima.Syntax.MemberExpression]: ({node}) => currentMemberExpression = node,
+  // [esprima.Syntax.BinaryExpression]: findReferencesInNodeChildren('left', 'right'),
+  // [esprima.Syntax.UnaryExpression]: findReferencesInNodeChildren('argument'),
+  // [esprima.Syntax.AssignmentExpression]: findReferencesInNodeChildren('right'),
+  // [esprima.Syntax.CallExpression]: findReferencesInNodeChildren('callee', 'arguments'),
+  // [esprima.Syntax.MemberExpression]: findReferencesInNodeChildren('object'),
+  // [esprima.Syntax.LogicalExpression]: findReferencesInNodeChildren('left', 'right'),
+  // [esprima.Syntax.Property]: findReferencesInProperty,
+  // [esprima.Syntax.ObjectExpression]: findReferencesInNodeChildren('properties'),
+  // [esprima.Syntax.ArrayExpression]: findReferencesInNodeChildren('elements'),
+  // [esprima.Syntax.NewExpression]: findReferencesInNodeChildren('object', 'arguments')
 };
 
 export
