@@ -15,10 +15,16 @@ from './genericHandlers';
 
 import isRestricted from './isRestricted';
 
+let currentMemberExpression = null;
+
+const shouldSkip = node => _.some([
+  currentMemberExpression && node.name === currentMemberExpression.property.name,
+]);
+
 const addIdentifierReference = inCurrentScope(({
   scopeChain, scope, node
 }) => {
-  if (scope.declares(node.name) || isRestricted(node.name)) {
+  if (scope.declares(node.name) || isRestricted(node.name) || shouldSkip(node)) {
     return;
   } else {
     // TODO pass the references in arguments, decouple them from the scope?
@@ -51,6 +57,12 @@ const findReferences = ({
 const findReferencesInNodeChildren = (...properties) => inCurrentScope(({
   scopeChain, scope, node
 }) => {
+  if (node.type === esprima.Syntax.MemberExpression) {
+    currentMemberExpression = node;
+  } else {
+    currentMemberExpression = null;
+  }
+
   const children = properties.reduce((result, prop) => {
     let child = node[prop];
     if (_.isArray(child)) {
@@ -59,7 +71,6 @@ const findReferencesInNodeChildren = (...properties) => inCurrentScope(({
 
     return result;
   }, []);
-
   findReferences({
     scopeChain, scope, nodes: children
   });
@@ -69,7 +80,6 @@ const findReferencesInProperty = nodeHandler(({
   scopeChain, node
 }) => {
   if (node.computed === true) {
-    throw new Error('computed');
     return findReferencesInNodeChildren('key', 'value')({
       scopeChain, node
     });

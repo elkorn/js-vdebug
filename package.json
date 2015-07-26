@@ -8,9 +8,14 @@
     "esprima": "^2.4.1",
     "lodash": "^3.10.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel": "^5.8.5",
+    "mocha": "^2.2.5",
+    "should": "^7.0.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --compilers js:babel/register",
+    "watch:test": "mocha --compilers js:babel/register --watch"
   },
   "author": "",
   "license": "ISC"
