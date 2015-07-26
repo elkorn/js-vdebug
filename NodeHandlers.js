@@ -20,7 +20,16 @@ default class NodeHandlers {
   }
 
   handle(scopeChain, node) {
-    return privates.get(this)[node.type]({
+    let handlers = privates.get(this);
+    let usedHandlers = [
+      handlers[node.type]
+    ];
+
+    if (handlers.hasOwnProperty('always')) {
+      usedHandlers.unshift(handlers.always);
+    }
+
+    return _.compose.apply(_, usedHandlers)({
       scopeChain, node
     });
   }

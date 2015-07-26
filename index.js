@@ -6,7 +6,7 @@ import log from './log';
 
 let input;
 if(process.argv[2]) {
-  input = fs.readFileSync(process.argv[2]);
+  input = fs.readFileSync(process.argv[2], 'utf-8');
 }
 
 traverse({

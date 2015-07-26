@@ -53,7 +53,17 @@ describe('getting references', () => {
             result[0].references.should.eql([{
               identifier: 'a',
               declaringScopeId: null,
-              referringScopeId: 0
+              referringScopeId: 0,
+              loc: {
+                start: {
+                  column: 11,
+                  line: 1
+                },
+                end: {
+                  column: 12,
+                  line: 1
+                }
+              }
             }]);
             done();
           }));

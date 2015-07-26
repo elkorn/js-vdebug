@@ -37,7 +37,8 @@ const addIdentifierReference = inCurrentScope(({
     scope.references.push(new Reference({
       identifier: node.name,
       declaringScope: scopeChain.findDeclaringScope(node.name),
-      referringScope: scope
+      referringScope: scope,
+      loc: node.loc
     }));
   }
 });
