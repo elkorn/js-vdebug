@@ -30,3 +30,4 @@ syntax.json
 input.*js
 ast.json
 esprima.json
+formatted.html
