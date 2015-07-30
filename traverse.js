@@ -8,12 +8,21 @@ import {
 from './withInput';
 
 import {
-  nodeHandler
+  inCurrentScope
 }
 from './decorators';
 
 import NodeHandlers from './NodeHandlers';
 import ScopeChain from './ScopeChain';
+import scopeHandlers from './scopeHandlers';
+import variableHandlers from './variableHandlers';
+
+const composeHandlerGroups = (groups, actionSelector) =>
+        groups.map(_.compose(
+          NodeHandlers.create,
+          _.property(actionSelector)));
+
+const runHandlers = (handlers, scopeChain) => node => handlers.forEach(h => h.handle(scopeChain, node));
 
 export
 default
@@ -21,39 +30,29 @@ default
 function({
   customHandlerGroups, done, input
 }) {
-  const handlerGroups = customHandlerGroups.map(({
-    enter, leave
-  }) => {
-    return {
-      enter: new NodeHandlers(enter),
-      leave: new NodeHandlers(leave)
-    };
-  });
+  let scopeChain = new ScopeChain();
+  let result = [];
+  const addToResultHandler = {
+    leave: {
+      always: inCurrentScope(({
+        scope
+      }) => {
+        if (result.indexOf(scope) === -1) {
+          result.unshift(scope);
+        }
+      })
+    }
+  };
+
+  const handlerGroups = [scopeHandlers, addToResultHandler, variableHandlers, ...customHandlerGroups];
+
+  const enterHandlerGroups = composeHandlerGroups(handlerGroups, 'enter');
+  const leaveHandlerGroups = composeHandlerGroups(handlerGroups.reverse(), 'leave');
 
   withAST(input, function(ast) {
-    let scopeChain = new ScopeChain();
-    let result = [];
-    const popScope = nodeHandler(({
-      node
-    }) => {
-      switch (node.type) {
-      case esprima.Syntax.FunctionDeclaration:
-      case esprima.Syntax.FunctionExpression:
-      case esprima.Syntax.Program:
-        result.unshift(scopeChain.pop());
-      }
-    });
-
     estraverse.traverse(ast, {
-      enter: _.compose.apply(
-        _,
-        handlerGroups.map(({
-          enter
-        }) => enter.handle.bind(enter, scopeChain))),
-      leave: _.compose.apply(
-        _, [popScope].concat(handlerGroups.map(({
-          leave
-        }) => leave.handle.bind(leave, scopeChain))))
+      enter: runHandlers(enterHandlerGroups, scopeChain),
+      leave: runHandlers(leaveHandlerGroups, scopeChain)
     });
 
     if (done) {
