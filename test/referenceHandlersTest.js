@@ -1,23 +1,15 @@
 import fs from 'fs';
 import should from 'should';
+import scopeHandlers from '../scopeHandlers';
+import variableHandlers from '../variableHandlers';
 import getReferenceHandlers from '../getReferenceHandlers';
 import traverse from '../traverse';
 
+import * as helpers from './helpers';
+
 const data = path => fs.readFileSync(`${__dirname}/data/${path}.js`);
 
-const test = (input, callback) => done => {
-  traverse({
-    input,
-    customHandlerGroups: [
-      getReferenceHandlers
-    ],
-    done: ({
-      ast, result
-    }) => callback({
-      ast, result, done
-    })
-  });
-};
+const test = helpers.testHandlers(getReferenceHandlers);
 
 describe('getting references', () => {
   it('recognizes references to the enclosing function in IIFE',

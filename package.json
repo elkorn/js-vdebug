@@ -11,7 +11,8 @@
   "devDependencies": {
     "babel": "^5.8.5",
     "mocha": "^2.2.5",
-    "should": "^7.0.2"
+    "should": "^7.0.2",
+    "sinon": "^1.15.4"
   },
   "scripts": {
     "test": "mocha --compilers js:babel/register",
