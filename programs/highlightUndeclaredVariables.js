@@ -1,4 +1,9 @@
-import fs from 'fs';
+import cli from 'cli';
+
+import {
+  read,
+  write
+} from '../src/utils/data';
 
 import {
   getReferenceHandlers,
@@ -7,25 +12,33 @@ import {
 }
 from '../src/node-handlers';
 
-import traverse from '../verbs/traverse';
-import formatSrc from '../verbs/formatSrc';
+import traverse from '../src/verbs/traverse';
+import formatSrc from '../src/verbs/formatSrc';
 
-import log from '../utils/log';
+const work = input => {
+  traverse({
+    input: input,
+    customHandlerGroups: [
+      getReferenceHandlers
+    ],
+    done: ({
+      ast, result
+    }) => {
+      write('formatted.html', formatSrc.highlightProblems(input, result), (err, path) => {
+        cli.ok(`Wrote ${path}`);
+      });
+    }
+  });
+};
 
-let input;
 if (process.argv[2]) {
-  input = fs.readFileSync(process.argv[2], 'utf-8');
-}
+  read(process.argv[2], (err, input, path) => {
+    if(err) {
+      cli.fatal(err.message);
+    }
 
-traverse({
-  input: input,
-  customHandlerGroups: [
-    getReferenceHandlers
-  ],
-  done: ({
-    ast, result
-  }) => {
-    fs.writeFile('formatted.html', formatSrc.highlightProblems(input, result));
-    fs.writeFile('syntax.json', JSON.stringify(result, null, '  '));
-  }
-});
+    work(input);
+  });
+} else {
+  cli.fatal('Provide a file to analyze. It must be in the data/in directory.');
+}

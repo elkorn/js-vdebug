@@ -1,19 +1,23 @@
 'use strict';
 
-const fs = require('fs');
-const esprima = require('esprima');
+import {
+  read
+}
+from '../utils/data';
+
+import esprima from 'esprima';
 
 const OPTIONS = {
   loc: true
 };
 
 function withDefaultInput(callback) {
-  fs.readFile('input.js', function(err, data) {
+  read('input.js', function(err, data, path) {
     if (err) {
       throw new Error('Error while reading: ' + err.message);
     }
 
-    callback(data);
+    callback(data, path);
   });
 }
 
