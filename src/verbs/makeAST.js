@@ -21,14 +21,16 @@ function withDefaultInput(callback) {
   });
 }
 
-function withAST(input, callback) {
-  if (input) {
+export default function(input, callback) {
+  if (typeof input === 'string') {
     callback(esprima.parse(input, OPTIONS));
   } else {
     withDefaultInput(function(data) {
-      callback(esprima.parse(data));
+      if(typeof input === 'function') {
+        input(esprima.parse(data));
+      } else {
+        callback(esprima.parse(data));
+      }
     });
   }
 }
-
-exports.withAST = withAST;

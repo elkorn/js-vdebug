@@ -1,12 +1,21 @@
 'use strict';
 
-var fs = require('fs');
-var withAST = require('./withAST').withAST;
+import cli from 'cli';
 
-withAST(function(ast) {
-    fs.writeFile('ast.json', JSON.stringify(ast, 'null', ' '), function(err, data) {
-        if (err) {
-            throw new Error('Error while writing: ' + err.message);
-        }
-    });
+import {
+  write
+}
+from '../src/utils/data';
+
+import makeAST from '../src/verbs/makeAST';
+
+makeAST(function(ast) {
+  write('ast.json', JSON.stringify(ast, null, ' '), (err, data, path) => {
+    if (err) {
+      cli.fatal(err.message);
+      return;
+    }
+
+    cli.ok(`Wrote ${path}`);
+  });
 });

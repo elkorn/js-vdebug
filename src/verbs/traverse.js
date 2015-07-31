@@ -2,10 +2,7 @@ import esprima from 'esprima';
 import estraverse from 'estraverse';
 import _ from 'lodash';
 
-import {
-  withAST
-}
-from './withAST';
+import makeAST from './makeAST';
 
 import {
   inCurrentScope
@@ -31,7 +28,7 @@ default
 function({
   customHandlerGroups, done, input
 }) {
-  withAST(input, function(ast) {
+  makeAST(input, function(ast) {
     let scopeChain = new ScopeChain();
     let result = [];
     const addToResultHandler = {
