@@ -1,4 +1,5 @@
 const privates = new WeakMap();
+
 export default class Stack {
   constructor() {
     privates.set(this, []);

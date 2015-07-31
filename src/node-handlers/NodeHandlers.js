@@ -1,11 +1,11 @@
 import esprima from 'esprima';
 import _ from 'lodash';
-import log from './log';
+import log from '../utils/log';
 
 import {
   nodeHandler
 }
-from './decorators';
+from '../utils/decorators';
 
 const DEFAULT_HANDLERS = _.values(esprima.Syntax).reduce((result, value) => {
   result[value] = nodeHandler(_.noop);

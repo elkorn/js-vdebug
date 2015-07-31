@@ -1,17 +1,17 @@
-import * as helpers from './helpers';
 import should from 'should';
-import scopeHandlers from '../scopeHandlers';
-import variableHandlers from '../variableHandlers';
-import getReferenceHandlers from '../getReferenceHandlers';
-import traverse from '../traverse';
+import scopeHandlers from '../src/node-handlers/scopeHandlers';
+import variableHandlers from '../src/node-handlers/variableHandlers';
+import getReferenceHandlers from '../src/node-handlers/getReferenceHandlers';
+import traverse from '../src/verbs/traverse';
 
-const test = helpers.testHandlers();
+import testHandlers from './utils/testHandlers';
+
+const test = testHandlers();
 
 describe('creating scopes', () => {
   it('works', test(`let x = 0;`, function({
     result, done
   }) {
-    console.log(result);
     result.length.should.equal(1);
     done();
   }));

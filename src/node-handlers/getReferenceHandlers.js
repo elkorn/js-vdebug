@@ -1,16 +1,16 @@
 import esprima from 'esprima';
 import _ from 'lodash';
 
-import Scope from './Scope';
-import Reference from './Reference';
-import Stack from './Stack';
+import Scope from '../nouns/Scope';
+import Reference from '../nouns/Reference';
+import Stack from '../utils/Stack';
 
 import {
   nodeHandler, inCurrentScope
 }
-from './decorators';
+from '../utils/decorators';
 
-import isRestricted from './isRestricted';
+import isRestricted from '../utils/validation/isRestricted';
 
 // TODO are single vars enough here? See the case of nested Property and MemberExpression nodes.
 let currentMemberExpression = null;

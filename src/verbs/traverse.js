@@ -5,17 +5,18 @@ import _ from 'lodash';
 import {
   withAST
 }
-from './withInput';
+from './withAST';
 
 import {
   inCurrentScope
 }
-from './decorators';
+from '../utils/decorators';
 
-import NodeHandlers from './NodeHandlers';
-import ScopeChain from './ScopeChain';
-import scopeHandlers from './scopeHandlers';
-import variableHandlers from './variableHandlers';
+import ScopeChain from '../nouns/ScopeChain';
+
+import NodeHandlers from '../node-handlers/NodeHandlers';
+import scopeHandlers from '../node-handlers/scopeHandlers';
+import variableHandlers from '../node-handlers/variableHandlers';
 
 const composeHandlerGroups = (groups, actionSelector) =>
         groups.map(_.compose(

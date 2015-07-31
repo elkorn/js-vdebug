@@ -1,13 +1,12 @@
 import esprima from 'esprima';
 import _ from 'lodash';
 
-import Scope from './Scope';
-import Reference from './Reference';
+import Scope from '../nouns/Scope';
 
 import {
   nodeHandler, inCurrentScope
 }
-from './decorators';
+from '../utils/decorators';
 
 export
 const addNewScope = nodeHandler(({

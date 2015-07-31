@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import log from './log';
+import log from '../utils/log';
 
 const wrap = tag => content => `<${tag}>${content}</${tag}>`;
 const tabify = str => '\t' + str;

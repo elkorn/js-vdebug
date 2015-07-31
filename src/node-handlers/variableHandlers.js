@@ -3,7 +3,7 @@ import esprima from 'esprima';
 import {
   inCurrentScope
 }
-from './decorators';
+from '../utils/decorators';
 
 export
 const addVariable = inCurrentScope(({

@@ -1,10 +1,10 @@
-import * as helpers from './helpers';
+import testHandlers from './utils/testHandlers';
 import should from 'should';
 import sinon from 'sinon';
-import scopeHandlers from '../scopeHandlers';
-import variableHandlers from '../variableHandlers';
-import getReferenceHandlers from '../getReferenceHandlers';
-import traverse from '../traverse';
+import scopeHandlers from '../src/node-handlers/scopeHandlers';
+import variableHandlers from '../src/node-handlers/variableHandlers';
+import getReferenceHandlers from '../src/node-handlers/getReferenceHandlers';
+import traverse from '../src/verbs/traverse';
 
 const SRC = `   `;
 const makeHandlers = () => [{
@@ -24,7 +24,7 @@ const makeHandlers = () => [{
 }];
 
 describe('node handlers are called in correct order -', () => {
-  it('enter handlers', helpers.testHandlers(...makeHandlers())(SRC, function({
+  it('enter handlers', testHandlers(...makeHandlers())(SRC, function({
     done, handlers
   }) {
     const [firstHandlers, secondHandlers] = handlers;
@@ -36,7 +36,7 @@ describe('node handlers are called in correct order -', () => {
     done();
   }));
 
-  it('leave handlers', helpers.testHandlers(...makeHandlers())(SRC, function({
+  it('leave handlers', testHandlers(...makeHandlers())(SRC, function({
     done, handlers
   }) {
     const [firstHandlers, secondHandlers] = handlers;
