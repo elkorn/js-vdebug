@@ -1,9 +1,12 @@
 import testHandlers from './utils/testHandlers';
 import should from 'should';
 import sinon from 'sinon';
-import scopeHandlers from '../src/node-handlers/scopeHandlers';
-import variableHandlers from '../src/node-handlers/variableHandlers';
-import getReferenceHandlers from '../src/node-handlers/getReferenceHandlers';
+
+import {
+  getReferenceHandlers
+}
+from '../src/node-handlers';
+
 import traverse from '../src/verbs/traverse';
 
 const SRC = `   `;

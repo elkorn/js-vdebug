@@ -1,11 +1,16 @@
-import getReferenceHandlers from './getReferenceHandlers';
-import scopeHandlers from './scopeHandlers';
-import variableHandlers from './variableHandlers';
-import traverse from './traverse';
-import formatSrc from './formatSrc';
 import fs from 'fs';
 
-import log from './log';
+import {
+  getReferenceHandlers,
+  scopeHandlers,
+  variableHandlers
+}
+from '../src/node-handlers';
+
+import traverse from '../verbs/traverse';
+import formatSrc from '../verbs/formatSrc';
+
+import log from '../utils/log';
 
 let input;
 if (process.argv[2]) {
