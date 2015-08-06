@@ -14,7 +14,7 @@ import {
 from '../src/node-handlers';
 
 import traverse from '../src/verbs/traverse';
-import formatSrc from '../src/verbs/formatSrc';
+import formatSrc from '../src/verbs/format-src';
 
 const work = input => {
   traverse({
@@ -45,7 +45,7 @@ default {
   },
 
   usage() {
-    return 'Usage info about highlightUndeclaredVariables';
+    return 'Usage info about showUndeclaredVariables';
   },
 
   args() {
