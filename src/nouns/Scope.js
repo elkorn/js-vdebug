@@ -5,6 +5,7 @@ export default class Scope {
         this.params = [];
         this.variables = [];
         this.references = [];
+        this.assignments = [];
     }
 
     declares(identifier) {
