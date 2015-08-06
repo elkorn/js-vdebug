@@ -22,7 +22,6 @@ cli.main((args, options) => {
     break;
 
   case when(options.list):
-    console.log(programs);
     cli.info(`List of available programs: ${tabify(Object.keys(programs).map(programWithArgs))}`);
     break;
 
