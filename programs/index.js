@@ -1,8 +1,9 @@
-import highlightUndeclaredVariables from './highlightUndeclaredVariables';
+import showUndeclaredVariables from './showUndeclaredVariables';
 import writeAST from './writeAST';
-
+import printEsprimaSyntax from './printEsprimaSyntax';
 
 export default {
-  highlightUndeclaredVariables,
-  writeAST
+  showUndeclaredVariables,
+  writeAST,
+  printEsprimaSyntax
 };
